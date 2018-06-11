@@ -48,7 +48,7 @@ function jsonFileParser(file) {
   })
 }
 
-const labelFixup = /^/
+const labelFixup = /^Edward Ruscha photographs of ((Los Angeles streets|Sunset Boulevard): )?/
 
 class Parser {
   constructor(props) {
