@@ -58,7 +58,7 @@ class Parser {
     this.externalIdLookup = {}
     this._pgConnection = new Client({
 			user: 'gis',
-			host: '192.168.208.3',
+			host: 'postgresql',
 			database: 'gis',
 			password: 'sig',
 //			port: 3211,
