@@ -179,10 +179,11 @@ class Parser {
 
   async 'oa:Annotation'(json, {owner}) {
     const {
+      '@id': id,
       '@type': type,
       motivation,
       resource: {
-        '@id': id,
+        '@id': resourceId,
         '@type': resourceType,
         format,
         height,
@@ -221,7 +222,7 @@ class Parser {
       rest: {},
     })
     incr(imageSizes, `${width}:${height}`)
-    return {'@id': id, '@type': type, format, width, height, service}
+    return {'@id': resourceId, '@type': type, format, width, height, service}
     //return {'@table': 'iiif', '@id': id, external_id: id, type: resourceType}
   }
 
@@ -232,39 +233,42 @@ class Parser {
       '@type': type,
       label,
       viewingHint,
-      thumbnail: {
-        '@id': thumbnailId,
-        '@type': thumbnailType,
-        service: {
-          '@context': thumbnailServiceContext,
-          '@id': thumbnailService,
-          profile: thumbnailProfile,
-          ...thumbnailServiceRest
-        },
-        ...thumbnailRest
-      },
+      thumbnail,
       height,
       width,
       images,
       ...rest
     } = json
-    assert.deepEqual({
-      type,
-      //thumbnailType,
-      thumbnailServiceContext,
-      thumbnailProfile,
-      thumbnailServiceRest,
-      thumbnailRest,
-      rest,
-    }, {
-      type: 'sc:Canvas',
-      //thumbnailType: 'dctypes:Image',
-      thumbnailServiceContext: 'http://iiif.io/api/image/2/context.json',
-      thumbnailProfile: 'http://iiif.io/api/image/2/level1.json',
-      thumbnailServiceRest: {},
-      thumbnailRest: {},
-      rest: {},
-    })
+    const {
+      '@id': thumbnailId,
+      '@type': thumbnailType,
+      service: {
+        '@context': thumbnailServiceContext,
+        '@id': thumbnailService,
+        profile: thumbnailProfile,
+        ...thumbnailServiceRest
+      },
+      ...thumbnailRest
+    } = thumbnail || {service: {}}
+    if (thumbnail) {
+      assert.deepEqual({
+        type,
+        //thumbnailType,
+        thumbnailServiceContext,
+        thumbnailProfile,
+        thumbnailServiceRest,
+        thumbnailRest,
+        rest,
+      }, {
+        type: 'sc:Canvas',
+        //thumbnailType: 'dctypes:Image',
+        thumbnailServiceContext: 'http://iiif.io/api/image/2/context.json',
+        thumbnailProfile: 'http://iiif.io/api/image/2/level1.json',
+        thumbnailServiceRest: {},
+        thumbnailRest: {},
+        rest: {},
+      })
+    }
     incr(imageSizes, `${width}:${height}`)
     const pgId = await this.getId(id)
     const parsedImages = await Promise.all(images.map(image => this.parse(image, json)))
@@ -308,6 +312,7 @@ class Parser {
       license,
       logo,
       viewingHint,
+      related,
       sequences,
       structures,
       ...rest
