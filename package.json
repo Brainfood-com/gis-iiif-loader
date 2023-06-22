@@ -23,6 +23,6 @@
   },
   "homepage": "https://github.com/Brainfood-com/gis-app#readme",
   "dependencies": {
-    "pg": "^7.4.3"
+    "pg": "^8.11.0"
   }
 }
